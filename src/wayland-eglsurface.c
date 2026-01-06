@@ -310,8 +310,9 @@ wlEglSendDamageEvent(WlEglSurface *surface,
     wl_surface_commit(surface->wlSurface);
     surface->ctx.isAttached = EGL_TRUE;
 
-    return (wl_display_roundtrip_queue(wlDpy,
-                                       queue) >= 0) ? EGL_TRUE : EGL_FALSE;
+    wl_display_flush(wlDpy);
+
+    return EGL_TRUE;
 }
 
 static void*
