@@ -243,7 +243,6 @@ send_explicit_sync_points (WlEglDisplay *display, WlEglSurface *surface,
 
 EGLBoolean
 wlEglSendDamageEvent(WlEglSurface *surface,
-                     struct wl_event_queue *queue,
                      EGLint *rects,
                      EGLint n_rects)
 {
@@ -321,9 +320,7 @@ damage_thread(void *args)
     WlEglSurface          *surface = (WlEglSurface*)args;
     WlEglDisplay          *display = surface->wlEglDpy;
     WlEglPlatformData     *data    = display->data;
-    struct wl_event_queue *queue   = wl_display_create_queue(
-                                        display->nativeDpy);
-    int                    ok      = (queue != NULL);
+    int                    ok      = 1;
     EGLint                 state;
 
     while (ok) {
@@ -377,7 +374,7 @@ damage_thread(void *args)
 
                 wlEglCreateFrameSync(surface);
 
-                ok = wlEglSendDamageEvent(surface, queue, NULL, 0);
+                ok = wlEglSendDamageEvent(surface, NULL, 0);
                 surface->ctx.framesProcessed++;
 
                 pthread_cond_signal(&surface->condFrameSync);
@@ -397,7 +394,6 @@ damage_thread(void *args)
         }
     }
 
-    wl_event_queue_destroy(queue);
     data->egl.releaseThread();
 
     return NULL;
